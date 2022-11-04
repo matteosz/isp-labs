@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  server:
+    image: com402/hw3_static
+    ports:
+      - 127.0.0.1:80:80
+    restart: always
+  webapp:
+    image: com402/hw3_webapp
+    restart: always
