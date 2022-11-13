@@ -4,9 +4,9 @@
 
 - [SQL Injection (Attack and Defense)](sql_injection/)
 - [Stack Smashing](stack_overflow/)
-- [Cookie Tampering / HMAC / PAKE](/)
-- [Password Cracking](/)
-- [Network Sniffing / TLS Downgrade](/)
+- [Cookie Tampering / HMAC / PAKE](cookies/)
+- [Password Cracking](password_cracking/)
+- [Network Sniffing / TLS Downgrade](network_sniffing/)
 - [Timing Attack](/)
 - [IMDB de-anonymization / DP](/)
 - [HE ML Inference / Model Stealing](/)

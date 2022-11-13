@@ -140,7 +140,7 @@ def run(hash, rainbow):
 
 def main():
     
-    rainbow_table = create_table(r=int(1e7), c=int(1e3))
+    rainbow_table = create_table(r=int(1e5), c=int(1e3))
 
     print('Rainbow table created successfully!')
 
