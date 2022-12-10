@@ -27,6 +27,7 @@ class DpQuerySession:
     def __init__(self, db, privacy_budget):
         self.db = db
         self.privacy_budget = privacy_budget
+        self.spent = 0
         self.old_queries = {}
         self._load_db()
 
@@ -48,7 +49,7 @@ class DpQuerySession:
         Returns:
             float: The remaining privacy budget.
         """
-        return self.privacy_budget
+        return self.privacy_budget - self.spent
 
     def get_count(self, movie_name, rating_threshold, epsilon):
         """
@@ -65,25 +66,27 @@ class DpQuerySession:
         Raises:
             BudgetDepletedError: When query would exceed the total privacy budget.
         """
-        # WARNING: Do not convert the response to positive integers. Leave as a
-        # possibly negative float. This is a requirement for our verification.
+
         if self.old_queries.get(movie_name) is not None:
             if self.old_queries[movie_name].get(rating_threshold) is not None:
                 return self.old_queries[movie_name][rating_threshold]
             else:
                 self.old_queries[movie_name] = {}
-
         
         if epsilon > self.remaining_budget:
             raise BudgetDepletedError
         
+        # Compute real value
         count = 0
         for line in self._entries:
             if line.movie == movie_name and line.stars >= rating_threshold:
                 count += 1
-        
-        ans = np.random.laplace(loc=0, scale=1. / epsilon)
-        self.old_queries[movie_name][rating_threshold] = ans
-        self.privacy_budget -= epsilon
 
-        return ans
+        # Add the error as Laplacias noise
+        count += np.random.laplace(loc=0, scale=1./epsilon)
+
+        # Cache the query
+        self.old_queries[movie_name][rating_threshold] = count
+        self.spent += epsilon
+
+        return count

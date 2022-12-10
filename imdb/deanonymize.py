@@ -108,7 +108,7 @@ hash_movies = sorted(hash_movies_freq.items(), key=lambda x : x[1], reverse=True
 mapping = {}
 iterator = iter(plain_movies)
 for hash in hash_movies:
-    mapping[hash] = next(iterator)[0]
+    mapping[hash[0]] = next(iterator)[0]
 
 # Find the users info
 users = {}
@@ -117,18 +117,15 @@ with open(f'anon_data/com402-2.csv') as fopen:
     for row in reader:
         if users.get(row['user']) is None:
             users[row['user']] = {}
-        if mapping.get(row['movie']) is None:
-            continue
         if users[row['user']].get(mapping[row['movie']]) is None:
             users[row['user']][mapping[row['movie']]] = 0
         users[row['user']][mapping[row['movie']]] += 1
 
-mail_hash = ''     
 # Check a match with user profiles
 for id, value in users.items():
     found = True
-    for movie, freq in value.items():
-        if movie not in user.keys() or freq != user[movie]:
+    for movie, freq in user.items():
+        if movie not in value or freq != value[movie]:
             found = False
             break
     if found is True:
